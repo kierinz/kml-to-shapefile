@@ -1,6 +1,6 @@
 streamlit
-pykml
 pandas
-fiona==1.9.6
-geopandas==0.14.4
-shapely==2.0.3
+fiona
+geopandas
+shapely
+pykml

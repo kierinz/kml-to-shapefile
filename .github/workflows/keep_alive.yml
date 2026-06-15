@@ -5,12 +5,15 @@ on:
     - cron: '0 */10 * * *' # Berjalan setiap 10 jam
   workflow_dispatch: # Membolehkan anda jalan secara manual jika mahu
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Memaksa penggunaan Node 24 serta-merta
+
 jobs:
   keep_alive:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Ditukar dari v3 ke v4 untuk sokongan Node 24
+        uses: actions/checkout@v4
 
       - name: Make empty commit
         run: |

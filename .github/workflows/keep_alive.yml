@@ -1,0 +1,20 @@
+name: Keep Streamlit App Alive
+
+on:
+  schedule:
+    - cron: '0 */10 * * *' # Berjalan setiap 10 jam
+  workflow_dispatch: # Membolehkan anda jalan secara manual jika mahu
+
+jobs:
+  keep_alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Make empty commit
+        run: |
+          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit --allow-empty -m "Keep-alive: Automasi Streamlit"
+          git push

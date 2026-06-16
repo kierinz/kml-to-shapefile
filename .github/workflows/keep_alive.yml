@@ -3,10 +3,7 @@ name: Keep Streamlit App Alive
 on:
   schedule:
     - cron: '0 */10 * * *' # Berjalan setiap 10 jam
-  workflow_dispatch: # Membolehkan anda jalan secara manual jika mahu
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Memaksa penggunaan Node 24 serta-merta
+  workflow_dispatch: # Membolehkan anda jalan secara manual
 
 jobs:
   keep_alive:
@@ -14,10 +11,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.STREAMLIT_TOKEN }} # Menggunakan token anda supaya Streamlit mengesan perubahan
 
       - name: Make empty commit
         run: |
           git config --local user.email "github-actions[bot]@://github.com"
           git config --local user.name "github-actions[bot]"
-          git commit --allow-empty -m "Keep-alive: Automasi Streamlit"
+          git commit --allow-empty -m "Keep-alive: Sentiasa Aktif"
           git push

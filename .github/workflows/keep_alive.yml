@@ -9,19 +9,16 @@ jobs:
   wake_app:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5 # v5 membuang terus amaran Node.js 20
-
-      - name: Setup Node.js
+      - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Menggunakan runtime stabil untuk Playwright
+          node-version: '20'
 
-      - name: Install Playwright and Browsers
+      - name: Install Playwright and Dependencies
         run: |
           npm init -y
           npm install playwright
-          npx playwright install chromium --with-deps # PENTING: Memasang pelayar web Chromium ke dalam Ubuntu
+          npx playwright install chromium --with-deps
 
       - name: Run Browser Script to Click Wake Button
         run: |
@@ -34,16 +31,16 @@ jobs:
             console.log('Membuka aplikasi Streamlit...');
             await page.goto('https://streamlit.app', { waitUntil: 'networkidle' });
             
-            // Mencari butang biru berdasarkan teks pada gambar
+            // Mencari butang biru berdasarkan teks di dalam gambar
             const wakeButton = page.locator('button:has-text(\"Yes, get this app back up!\")');
             
             if (await wakeButton.count() > 0) {
               console.log('Butang tidur dikesan! Menekan butang untuk membangunkan aplikasi...');
               await wakeButton.click();
-              await page.waitForTimeout(5000); // Tunggu 5 saat untuk proses memuatkan semula
+              await page.waitForTimeout(8000); // Tunggu 8 saat untuk proses memuatkan semula
               console.log('Aplikasi berjaya dikejutkan!');
             } else {
-              console.log('Aplikasi sudah sedia aktif, tiada butang tidur dikesan.');
+              console.log('Aplikasi sudah sedia aktif atau butang tidak ditemui.');
             }
             
             await browser.close();

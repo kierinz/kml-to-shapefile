@@ -6,17 +6,9 @@ on:
   workflow_dispatch: # Membolehkan anda jalan secara manual
 
 jobs:
-  keep_alive:
+  ping_app:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5 # Ditukar ke v5 untuk menghilangkan amaran pepijat Node 20/24
-        with:
-          token: ${{ secrets.STREAMLIT_TOKEN }}
-
-      - name: Make empty commit
+      - name: Wake up Streamlit via HTTP Ping
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit --allow-empty -m "Keep-alive: Sentiasa Aktif"
-          git push
+          curl -sI https://kml2shp.streamlit.app/ | head -n 1

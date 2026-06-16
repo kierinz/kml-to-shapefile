@@ -20,7 +20,7 @@ jobs:
           npm install playwright
           npx playwright install chromium --with-deps
 
-      - name: Run Browser Script to Click Wake Button
+      - name: Run Deep Browser Click Script
         run: |
           node -e "
           const { chromium } = require('playwright');
@@ -29,18 +29,40 @@ jobs:
             const page = await browser.newPage();
             
             console.log('Membuka aplikasi Streamlit...');
-            await page.goto('https://streamlit.app', { waitUntil: 'networkidle' });
+            await page.goto('https://kml2shp.streamlit.app/', { waitUntil: 'networkidle', timeout: 60000 });
             
-            // Mencari butang biru berdasarkan teks di dalam gambar
-            const wakeButton = page.locator('button:has-text(\"Yes, get this app back up!\")');
+            // 1. Tunggu sebentar untuk pastikan semua iframe dimuatkan
+            await page.waitForTimeout(5000);
             
+            // 2. Cari butang di halaman utama ATAU di dalam mana-mana iframe (Streamlit menggunakan iframe untuk bungkusan cloud)
+            let wakeButton = page.locator('button:has-text(\"Yes, get this app back up!\")');
+            let clicked = false;
+
             if (await wakeButton.count() > 0) {
-              console.log('Butang tidur dikesan! Menekan butang untuk membangunkan aplikasi...');
+              console.log('Butang dikesan di halaman utama! Menekan...');
               await wakeButton.click();
-              await page.waitForTimeout(8000); // Tunggu 8 saat untuk proses memuatkan semula
-              console.log('Aplikasi berjaya dikejutkan!');
+              clicked = true;
             } else {
-              console.log('Aplikasi sudah sedia aktif atau butang tidak ditemui.');
+              // Jika tiada di halaman utama, selongkar semua iframe yang ada
+              const frames = page.frames();
+              console.log('Mencari butang di dalam ' + frames.length + ' iframe...');
+              for (const frame of frames) {
+                const buttonInFrame = frame.locator('button:has-text(\"Yes, get this app back up!\")');
+                if (await buttonInFrame.count() > 0) {
+                  console.log('Butang ditemui di dalam iframe! Menekan butang untuk mengejutkan aplikasi...');
+                  await buttonInFrame.click();
+                  clicked = true;
+                  break;
+                }
+              }
+            }
+            
+            if (clicked) {
+              console.log('Sila tunggu 15 saat untuk proses pengaktifan server pelayan...');
+              await page.waitForTimeout(15000); 
+              console.log('Proses selesai! Sila semak aplikasi anda.');
+            } else {
+              console.log('Aplikasi sudah sedia bangun atau struktur halaman berubah.');
             }
             
             await browser.close();

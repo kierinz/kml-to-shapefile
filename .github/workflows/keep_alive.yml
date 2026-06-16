@@ -1,14 +1,45 @@
-name: Keep Streamlit App Alive
+name: Wake Up Streamlit App
 
 on:
   schedule:
     - cron: '0 */10 * * *' # Berjalan setiap 10 jam
-  workflow_dispatch: # Membolehkan anda jalan secara manual
+  workflow_dispatch: # Boleh dijalankan manual
 
 jobs:
-  ping_app:
+  wake_app:
     runs-on: ubuntu-latest
     steps:
-      - name: Wake up Streamlit via HTTP Ping
+      - name: Setup Node.js
+        uses: actions/checkout@v4 # Menggunakan checkout standard (abaikan amaran jika ada)
+        
+      - name: Install Playwright
         run: |
-          curl -sI https://kml2shp.streamlit.app/ | head -n 1
+          npm init -y
+          npm install playwright
+
+      - name: Run Browser Script to Click Wake Button
+        run: |
+          node -e "
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage();
+            
+            console.log('Membuka aplikasi Streamlit...');
+            await page.goto('https://streamlit.app', { waitUntil: 'networkidle' });
+            
+            // Mencari dan menekan butang biru berdasarkan teks di dalam gambar anda
+            const wakeButton = page.locator('button:has-text(\"Yes, get this app back up!\")');
+            
+            if (await wakeButton.count() > 0) {
+              console.log('Butang tidur dikesan! Menekan butang untuk membangunkan aplikasi...');
+              await wakeButton.click();
+              await page.waitForTimeout(5000); // Tunggu 5 saat untuk proses bangun
+              console.log('Aplikasi berjaya dikejutkan!');
+            } else {
+              console.log('Aplikasi sudah sedia aktif, tiada butang tidur dikesan.');
+            }
+            
+            await browser.close();
+          })();
+          "

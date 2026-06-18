@@ -20,4 +20,5 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 EXPOSE 7860
 
 # Arahan wajib untuk menjalankan Streamlit pada port Hugging Face
-CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "main.py", "--server.port=7860", "--server.address=0.0.0.0"]
+

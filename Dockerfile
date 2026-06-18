@@ -18,5 +18,5 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Mendedahkan port 7860 yang diwajibkan oleh Hugging Face Spaces
 EXPOSE 7860
 
-# Menjalankan fail utama aplikasi anda dengan menutup sekatan CORS/XSRF Hugging Face
-CMD ["streamlit", "run", "main.py", "--server.port=7860", "--server.address=0.0.0.0", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]
+# Menjalankan fail utama aplikasi anda dengan menutup semua jenis sekatan CORS/XSRF/Websocket
+CMD ["streamlit", "run", "main.py", "--server.port=7860", "--server.address=0.0.0.0", "--server.enableCORS=false", "--server.enableXsrfProtection=false", "--server.enableWebsocketCompression=false"]

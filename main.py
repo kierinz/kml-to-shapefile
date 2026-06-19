@@ -24,11 +24,16 @@ try:
 except Exception as e:
     logging.error(f"Error during startup cleanup: {str(e)}")
 
+from PIL import Image
+
+icon_image = Image.open("favicon.png")
+
 st.set_page_config(
     page_title="KML to Shapefile Converter",
-    page_icon="🌍",
+    page_icon=icon_image,
     layout="wide"
 )
+
 
 st.title("🌍 KML to Shapefile Converter")
 st.markdown("""
